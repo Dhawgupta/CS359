@@ -4,6 +4,7 @@ import random
 ## we need to make an intermediate object named as connection which will keep the info
 # of which switch is connected to with source
 EPSILON = 1e-9
+
 class Switch:
 
 	def __init__(self, output_bandwidth = 10000 , source_list = None ,queue_size = float("inf"), sink = None ): #  bndwitch of 1000 bits/sec
@@ -18,6 +19,7 @@ class Switch:
 		self.data_left_transmit = 0 # immediate data left for transmission
 		self.data_left_last_time = 0 # the start time of data transmission started
 		self.sink = sink # assign the sink to the switch
+		self.packets_dropped = 0
 	@property
 	def incoming_rate(self):
 		if self.source_list is None:
@@ -75,8 +77,6 @@ class Switch:
 		else:
 			for s in self.source_list:
 				print s
-
-
 
 class Source:
 	""" this is the class for the source variable"""
@@ -186,15 +186,23 @@ class Event:
 		self.packet.source.switch.last_packet_recieved = self.event_time
 		# log the information for input data
 
-		#time_new = time_prdouce + time_sendSwitch + N*output_bandwidth*sizeofpacket + currentTransmission(not considering at the moment)
-		self.event_time = self.event_time + (self.packet.source.switch.get_queue_size() + self.packet.source.switch.data_left_transmit)/self.packet.source.switch.output_bandwidth
-		# print the queue size in between
+		if self.packet.source.switch.queue_size > self.packet.source.switch.get_number_packets():
+			# there is space in the queue to add another packet
+			#time_new = time_prdouce + time_sendSwitch + N*output_bandwidth*sizeofpacket + currentTransmission(not considering at the moment)
+			self.event_time = self.event_time + (self.packet.source.switch.get_queue_size() + self.packet.source.switch.data_left_transmit)/self.packet.source.switch.output_bandwidth
+			# print the queue size in between
 
-		# now we will modify the queue etc
-		self.packet.source.switch.insert_packet_queue(self.packet)
+			# now we will modify the queue etc
+
+			self.packet.source.switch.insert_packet_queue(self.packet)
+			return [self] # here we have returned back
+		else:
+			self.packet.source.switch.packets_dropped += 1
+			print "Packet Dropped"
+			return None
 
 
-		return [self] # here we have returned back
+
 
 		# self.data_recieved_uptil_now = 0 # to keep a track of total data recieved uptil now
 		# self.packet_recieved_uptil_now = 0
@@ -231,7 +239,6 @@ class Event:
 		# del self.packet # need to know if this will aso delete the inforamtion of source
 		print "Packet Recieved"
 		return None
-
 
 class Packet:
 	def __init__(self, source, packet_id, packet_generate_time):
@@ -339,64 +346,12 @@ class Simulation:
 			# else:
 			# 	print " {} : {}".format(self.switch.incoming_rate,self.switch.data_recieved_uptil_now/self.switch.last_packet_recieved)
 
-
 if __name__ ==	 "__main__":
 	# sim = Simulation(no_of_Sources, source_tranfer_rate, source_bandwidth, output_bandwidth, timeLimit,packet_sizes,queue_size = float("inf"))
 	sim = Simulation(no_of_Sources = 4,source_tranfer_rate =  [1,1,1,1], source_bandwidth = [1000,1000,1000,1000],output_bandwidth =  1000,
 	 timeLimit = 1000, packet_sizes = [100, 100, 100, 100] ,queue_size = float("inf"))
 
 	sim.Run_Simulation()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # # describe initial sources
