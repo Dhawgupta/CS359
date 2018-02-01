@@ -1,0 +1,3 @@
+THREAD=1
+IPA=172.16.1.11,172.16.1.12,127.0.0.1
+DEFAULT=/home/dawg/Documents/Semester6/CS359/Lab3/index.html
