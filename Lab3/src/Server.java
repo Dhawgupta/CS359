@@ -18,9 +18,20 @@ public class Server{
     static String defaultFile; // the default file to display from the browser
     private ServerSocket serverSocket;
     private int port;
+
+
+
     public static void main(String [] args) throws IOException {
-        Server server = new Server(5000, "./ConfigurationFile.txt");
-        server.startMultiThreadedServer();
+
+          //  Question 1
+        Server server = new Server(5001);
+        server.serverStart(); // start the single threaded server
+
+
+
+//        // Qurstion 2
+//        Server server = new Server(5000, "./ConfigurationFile.txt");
+//        server.startMultiThreadedServer();
 
     }
 
@@ -50,7 +61,13 @@ public class Server{
 
     }
 
-    public Server(int port, String configFile){
+    public Server(int port){ // server file which doesnt contain the configuration file
+        // question 1
+        this.port = port;
+
+    }
+
+    public Server(int port, String configFile){ //Question 2 contains the configuration file
         this.port = port;
         Server.readConfigFile(configFile);
     }

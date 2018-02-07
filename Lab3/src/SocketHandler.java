@@ -16,7 +16,7 @@ public class SocketHandler implements Runnable {
     public void run(){
         System.out.println("Threaded out for client : " +client.toString() + " with thread id as : " + Thread.currentThread().getName());
         try {
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(10);
             processClient();
 
         } catch (IOException | InterruptedException e) {
